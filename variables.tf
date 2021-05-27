@@ -25,6 +25,18 @@ variable "subnet_size" {
   type = map(number)
 }
 
+variable "min_size" {
+  type = map(number)
+}
+
+variable "desired_capacity" {
+  type = map(number)
+}
+
+variable "max_size" {
+  type = map(number)
+}
+
 ##################################################################################
 # LOCALS
 ##################################################################################
