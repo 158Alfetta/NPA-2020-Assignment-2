@@ -187,6 +187,28 @@ resource "aws_instance" "Webserver" {
   key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.allow_ssh_web.id]
   subnet_id = aws_subnet.Subnet_1.id
+  
+
+provisioner "remote-exec" {
+    inline = [
+        "sudo yum update -y",
+        "sudo yum install git -y",
+        "sudo amazon-linux-extras install nginx1 -y",
+        "cd /home/ec2-user",
+        "git clone https://github.com/enjoy1818/SpaceX-page.git",
+        "ls SpaceX-page/space-x/",
+        "cd SpaceX-page/space-x/",
+        "sudo curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -",
+        "sudo yum install -y nodejs",
+        "ls",
+        "pwd",
+        "npm install",
+        "npm add react-infinite-scroll-component",
+        "npm run build",
+        "sudo \\cp -r ./build/* /usr/share/nginx/html/"
+    ]
+  }
+
   connection {
     type        = "ssh"
     host        = self.public_ip
@@ -222,20 +244,7 @@ resource "aws_launch_configuration" "scaleCmd" {
 
   user_data = <<-EOF
             #!/bin/bash
-            sudo su
-            yum update -y
-            yum install git -y
-            amazon-linux-extras install nginx1 -y
-            cd /home/ec2-user
-            git clone https://github.com/enjoy1818/SpaceX-page.git
-            cd SpaceX-page/space-x/
-            curl -sL https://rpm.nodesource.com/setup_14.x | bash -
-            yum install -y nodejs
-            npm install 
-            npm add react-infinite-scroll-component
-            npm run build
-            \cp -r ./build/* /usr/share/nginx/html/
-            service nginx start
+            sudo service nginx start
             EOF
 
   lifecycle {
